@@ -177,14 +177,8 @@ def add_conference():
     print("entrou aqui")
     if request.method == 'POST':
         try:
-            # Gerar ID único
-            conference_id = request.form.get('id', '').lower().strip()
-            if not conference_id:
-                conference_id = str(uuid.uuid4())[:8]
-            
             # Preparar dados da conferência
             conference_data = {
-                'id': conference_id,
                 'name': request.form.get('name'),
                 'full_name': request.form.get('full_name'),
                 'dates': request.form.get('dates'),

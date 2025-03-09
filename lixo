@@ -1,0 +1,6 @@
+  <h4 class="mt-4">Tópicos principais:</h4>
+                    <ul class="list-group list-group-flush mb-4">
+                        {% for topic in conference.topics %}
+                        <li class="list-group-item">{{ topic }}</li>
+                        {% endfor %}
+                    </ul>
