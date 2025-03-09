@@ -1,0 +1,54 @@
+{% extends "layout.html" %}
+
+{% block title %}Home - Flask Supabase Auth{% endblock %}
+
+{% block content %}
+<div class="p-5 mb-4 bg-light rounded-3">
+    <div class="container-fluid py-5 text-center">
+        <h1 class="display-5 fw-bold">Bem-vindo ao Flask Supabase Auth</h1>
+        <p class="fs-4">Um exemplo simples de autenticação com Flask e Supabase</p>
+        {% if not session.get('user') %}
+            <div class="mt-4">
+                <a href="{{ url_for('signup') }}" class="btn btn-primary btn-lg mx-2">Registrar</a>
+                <a href="{{ url_for('login') }}" class="btn btn-outline-primary btn-lg mx-2">Entrar</a>
+            </div>
+        {% else %}
+            <div class="mt-4">
+                <a href="{{ url_for('dashboard') }}" class="btn btn-success btn-lg">Acessar Dashboard</a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Seção de Eventos/Conferências -->
+<div class="container mt-5">
+    <h2 class="mb-4 text-center">Conferências de IA Disponíveis</h2>
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>Nome</th>
+                    <th>Datas</th>
+                    <th>Localização</th>
+                    <th>Prazo</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for conference in conferences %}
+                <tr>
+                    <td>{{ conference.name }} - {{ conference.full_name }}</td>
+                    <td>{{ conference.dates }}</td>
+                    <td>{{ conference.location }}</td>
+                    <td>{{ conference.deadline }}</td>
+                    <td>
+                        <a href="{{ url_for('conference_details', conference_id=conference.id) }}" 
+                           class="btn btn-primary btn-sm">Ver Detalhes</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

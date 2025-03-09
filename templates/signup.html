@@ -1,0 +1,32 @@
+{% extends "layout.html" %}
+
+{% block title %}Registrar - Flask Supabase Auth{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <h2 class="mb-4">Criar Conta</h2>
+    
+    {% if error %}
+    <div class="alert alert-danger" role="alert">
+        {{ error }}
+    </div>
+    {% endif %}
+    
+    <form method="POST" action="{{ url_for('signup') }}">
+        <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input type="email" class="form-control" id="email" name="email" required>
+        </div>
+        <div class="mb-3">
+            <label for="password" class="form-label">Senha</label>
+            <input type="password" class="form-control" id="password" name="password" required>
+            <div class="form-text">A senha deve ter pelo menos 6 caracteres.</div>
+        </div>
+        <button type="submit" class="btn btn-primary">Registrar</button>
+    </form>
+    
+    <p class="mt-3">
+        Já possui uma conta? <a href="{{ url_for('login') }}">Faça login</a>
+    </p>
+</div>
+{% endblock %}

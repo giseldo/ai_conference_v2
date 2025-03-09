@@ -1,0 +1,31 @@
+{% extends "layout.html" %}
+
+{% block title %}Login - Flask Supabase Auth{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <h2 class="mb-4">Entrar</h2>
+    
+    {% if error %}
+    <div class="alert alert-danger" role="alert">
+        {{ error }}
+    </div>
+    {% endif %}
+    
+    <form method="POST" action="{{ url_for('login') }}">
+        <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input type="email" class="form-control" id="email" name="email" required>
+        </div>
+        <div class="mb-3">
+            <label for="password" class="form-label">Senha</label>
+            <input type="password" class="form-control" id="password" name="password" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Entrar</button>
+    </form>
+    
+    <p class="mt-3">
+        Não possui uma conta? <a href="{{ url_for('signup') }}">Registre-se</a>
+    </p>
+</div>
+{% endblock %}
