@@ -32,11 +32,9 @@ class TestAddConference(unittest.TestCase):
             'full_name': 'International Conference on Machine Learning',
             'dates': '10-15 July 2024',
             'location': 'Vienna, Austria',
-            'countdown': 'in 3 months',
             'categories': 'machine-learning, artificial-intelligence',
             'deadline': '2024-01-30 23:59',
             'website': 'icml2024.org',
-            'topics': ['Deep Learning', 'Reinforcement Learning', 'Natural Language Processing'],
             'description': 'A leading international academic conference in machine learning.'
         }
         
@@ -88,11 +86,9 @@ class TestAddConference(unittest.TestCase):
             'full_name': 'Neural Information Processing Systems',
             'dates': '9-15 December 2024',
             'location': 'Vancouver, Canada',
-            'countdown': 'in 8 months',
             'categories': 'neural-networks,deep-learning',
             'deadline': '2024-05-17 23:59',
             'website': 'neurips2024.cc',
-            'topics': ['Deep Learning', 'Machine Learning Theory'],
             'description': 'Leading conference on neural networks and deep learning'
         }
         

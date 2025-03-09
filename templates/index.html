@@ -6,7 +6,7 @@
 <div class="p-5 mb-4 bg-light rounded-3">
     <div class="container-fluid py-5 text-center">
         <h1 class="display-5 fw-bold">AI Conferences deadline</h1>
-        <p class="fs-4">AI Conferences deadline</p>
+        <p class="fs-4">Seu calendário completo de eventos em Ciência da Computação.</p>
         {% if not session.get('user') %}
             <div class="mt-4">
                 <a href="{{ url_for('signup') }}" class="btn btn-primary btn-lg mx-2">Registrar</a>
@@ -31,6 +31,7 @@
                     <th>Datas</th>
                     <th>Localização</th>
                     <th>Prazo</th>
+                    <th>Tempo Restante</th>
                     <th>Ações</th>
                 </tr>
             </thead>
@@ -41,6 +42,9 @@
                     <td>{{ conference.dates }}</td>
                     <td>{{ conference.location }}</td>
                     <td>{{ conference.deadline }}</td>
+                    <td class="countdown-cell" data-deadline="{{ conference.deadline }}">
+                        <span class="countdown-value">Calculando...</span>
+                    </td>
                     <td>
                         <a href="{{ url_for('conference_details', conference_id=conference.id) }}" 
                            class="btn btn-primary btn-sm">Ver Detalhes</a>
@@ -51,4 +55,69 @@
         </table>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Atualizar os contadores de tempo restante
+        function updateCountdowns() {
+            const countdownCells = document.querySelectorAll('.countdown-cell');
+            
+            countdownCells.forEach(cell => {
+                const deadlineStr = cell.getAttribute('data-deadline');
+                const countdownElement = cell.querySelector('.countdown-value');
+                
+                // Verificar se a data é válida
+                if (!deadlineStr) {
+                    countdownElement.textContent = 'Data não definida';
+                    return;
+                }
+                
+                try {
+                    // Formato esperado: YYYY-MM-DD HH:MM
+                    const deadlineDate = new Date(deadlineStr);
+                    const now = new Date();
+                    
+                    // Verificar se a data é válida
+                    if (isNaN(deadlineDate.getTime())) {
+                        countdownElement.textContent = 'Data inválida';
+                        return;
+                    }
+                    
+                    const timeDiff = deadlineDate - now;
+                    
+                    if (timeDiff <= 0) {
+                        countdownElement.textContent = 'Prazo encerrado';
+                        cell.classList.add('text-danger');
+                    } else {
+                        // Calcular dias, horas, minutos restantes
+                        const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+                        const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                        const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+                        
+                        let countdownText = '';
+                        if (days > 0) countdownText += `${days} dia(s) `;
+                        if (hours > 0 || days > 0) countdownText += `${hours} hora(s) `;
+                        countdownText += `${minutes} minuto(s)`;
+                        
+                        countdownElement.textContent = countdownText;
+                        
+                        // Adicionar classes para destacar prazos próximos
+                        if (days < 1) {
+                            cell.classList.add('text-danger', 'fw-bold');
+                        } else if (days < 7) {
+                            cell.classList.add('text-warning');
+                        }
+                    }
+                } catch (error) {
+                    countdownElement.textContent = 'Erro ao calcular';
+                    console.error("Erro ao calcular tempo restante:", error);
+                }
+            });
+        }
+        
+        // Executar imediatamente e depois a cada minuto
+        updateCountdowns();
+        setInterval(updateCountdowns, 60000);
+    });
+</script>
 {% endblock %}

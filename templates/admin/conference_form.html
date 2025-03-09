@@ -50,15 +50,6 @@
                     </div>
                 </div>
 
-                {% if action == 'add' %}
-                <div class="mb-3">
-                    <label for="id" class="form-label">ID (deixe em branco para gerar automaticamente)</label>
-                    <input type="text" class="form-control" id="id" name="id" 
-                           value="" placeholder="ex: icann2025">
-                    <div class="form-text">Use apenas letras minúsculas, números e hífen. Se deixado em branco, um ID será gerado automaticamente.</div>
-                </div>
-                {% endif %}
-
                 <div class="row mb-3">
                     <div class="col-md-6">
                         <label for="dates" class="form-label">Datas*</label>
@@ -80,10 +71,7 @@
                                placeholder="YYYY-MM-DD HH:MM">
                     </div>
                     <div class="col-md-6">
-                        <label for="countdown" class="form-label">Contagem Regressiva*</label>
-                        <input type="text" class="form-control" id="countdown" name="countdown" 
-                               value="{{ conference.countdown if conference else '' }}" required
-                               placeholder="ex: in 7 days">
+                        
                     </div>
                 </div>
 
@@ -91,7 +79,7 @@
                     <label for="categories" class="form-label">Categorias*</label>
                     <input type="text" class="form-control" id="categories" name="categories" 
                            value="{% if conference %}{{ conference.categories|join(',') }}{% endif %}" required
-                           placeholder="machine-learning,natural-language-processing">
+                           placeholder="machine-learning, natural-language-processing">
                     <div class="form-text">Separadas por vírgula, sem espaços.</div>
                 </div>
 
@@ -107,26 +95,6 @@
                     <textarea class="form-control" id="description" name="description" rows="5" required>{{ conference.description if conference else '' }}</textarea>
                 </div>
 
-                <div class="mb-3">
-                    <label class="form-label">Tópicos*</label>
-                    <div id="topicsContainer">
-                        {% if conference and conference.topics %}
-                            {% for topic in conference.topics %}
-                                <div class="input-group mb-2 topic-entry">
-                                    <input type="text" class="form-control" name="topics" value="{{ topic }}" required>
-                                    <button class="btn btn-outline-danger remove-topic" type="button">Remover</button>
-                                </div>
-                            {% endfor %}
-                        {% else %}
-                            <div class="input-group mb-2 topic-entry">
-                                <input type="text" class="form-control" name="topics" required>
-                                <button class="btn btn-outline-danger remove-topic" type="button">Remover</button>
-                            </div>
-                        {% endif %}
-                    </div>
-                    <button type="button" class="btn btn-outline-primary" id="addTopic">Adicionar Tópico</button>
-                </div>
-
                 <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                     <a href="{{ url_for('admin_conferences') }}" class="btn btn-secondary me-md-2">Cancelar</a>
                     <button type="submit" class="btn btn-primary">
@@ -138,37 +106,4 @@
     </div>
 </div>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Adicionar tópico
-        document.getElementById('addTopic').addEventListener('click', function() {
-            const container = document.getElementById('topicsContainer');
-            const newEntry = document.createElement('div');
-            newEntry.className = 'input-group mb-2 topic-entry';
-            newEntry.innerHTML = `
-                <input type="text" class="form-control" name="topics" required>
-                <button class="btn btn-outline-danger remove-topic" type="button">Remover</button>
-            `;
-            container.appendChild(newEntry);
-            
-            // Adicionar evento de remoção para o novo botão
-            newEntry.querySelector('.remove-topic').addEventListener('click', removeTopic);
-        });
-        
-        // Remover tópico
-        function removeTopic() {
-            const topicEntries = document.querySelectorAll('.topic-entry');
-            if (topicEntries.length > 1) {
-                this.closest('.topic-entry').remove();
-            } else {
-                alert('É necessário pelo menos um tópico.');
-            }
-        }
-        
-        // Adicionar evento de remoção para botões existentes
-        document.querySelectorAll('.remove-topic').forEach(button => {
-            button.addEventListener('click', removeTopic);
-        });
-    });
-</script>
 {% endblock %}

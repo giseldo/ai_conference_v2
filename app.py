@@ -165,7 +165,7 @@ def logout():
 
 # Rota para listar conferências (admin)
 @app.route('/admin/conferences')
-@admin_required
+#@admin_required
 def admin_conferences():
     conferences = get_conferences_from_db()
     return render_template('admin/conferences.html', conferences=conferences)
@@ -183,11 +183,9 @@ def add_conference():
                 'full_name': request.form.get('full_name'),
                 'dates': request.form.get('dates'),
                 'location': request.form.get('location'),
-                'countdown': request.form.get('countdown'),
                 'categories': request.form.get('categories').split(','),
                 'deadline': request.form.get('deadline'),
                 'website': request.form.get('website'),
-                #'topics': request.form.getlist('topics'),
                 'description': request.form.get('description'),
                 'created_at': datetime.now().isoformat(),
                 'updated_at': datetime.now().isoformat()
@@ -224,11 +222,9 @@ def edit_conference(conference_id):
                 'full_name': request.form.get('full_name'),
                 'dates': request.form.get('dates'),
                 'location': request.form.get('location'),
-                'countdown': request.form.get('countdown'),
                 'categories': request.form.get('categories').split(','),
                 'deadline': request.form.get('deadline'),
                 'website': request.form.get('website'),
-                'topics': request.form.getlist('topics'),
                 'description': request.form.get('description'),
                 'updated_at': datetime.now().isoformat()
             }
