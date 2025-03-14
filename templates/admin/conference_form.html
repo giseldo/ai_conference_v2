@@ -12,7 +12,7 @@
 <div class="container mt-4">
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+            <li class="breadcrumb-item"><a href="{{ url_for('configuracao') }}">Configuração</a></li>
             <li class="breadcrumb-item"><a href="{{ url_for('admin_conferences') }}">Conferências</a></li>
             <li class="breadcrumb-item active" aria-current="page">
                 {% if action == 'add' %}Nova Conferência{% else %}Editar Conferência{% endif %}
@@ -65,7 +65,7 @@
 
                 <div class="row mb-3">
                     <div class="col-md-6">
-                        <label for="deadline" class="form-label">Prazo*</label>
+                        <label for="deadline" class="form-label">Prazo da submissão*</label>
                         <input type="text" class="form-control" id="deadline" name="deadline" 
                                value="{{ conference.deadline if conference else '' }}" required
                                placeholder="YYYY-MM-DD HH:MM">

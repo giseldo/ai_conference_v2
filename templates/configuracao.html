@@ -1,29 +1,17 @@
 {% extends "layout.html" %}
 
-{% block title %}Dashboard - Flask Supabase Auth{% endblock %}
+{% block title %}configuracao - Flask Supabase Auth{% endblock %}
 
 {% block content %}
 <div class="row">
     <div class="col-md-12">
         <div class="card">
             <div class="card-header">
-                <h2>Dashboard</h2>
+                <h2>Configuração</h2>
             </div>
             <div class="card-body">
                 <h5 class="card-title">Bem-vindo, {{ user.email }}!</h5>
                 <p class="card-text">Você está autenticado com sucesso!</p>
-                
-                <div class="mt-4">
-                    <h6>Suas informações:</h6>
-                    <ul class="list-group">
-                        <li class="list-group-item">
-                            <strong>ID:</strong> {{ user.id }}
-                        </li>
-                        <li class="list-group-item">
-                            <strong>Email:</strong> {{ user.email }}
-                        </li>
-                    </ul>
-                </div>
                 
                 {% if is_admin %}
                 <div class="mt-4">

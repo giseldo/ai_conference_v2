@@ -28,7 +28,7 @@
                 <ul class="navbar-nav ms-auto">
                     {% if session.get('user') %}
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('dashboard') }}">Dashboard</a>
+                            <a class="nav-link" href="{{ url_for('configuracao') }}">Configuração</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
@@ -38,7 +38,7 @@
                             <a class="nav-link" href="{{ url_for('login') }}">Login</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('signup') }}">Signup</a>
+                            <a class="nav-link" href="{{ url_for('signup') }}">Criar conta</a>
                         </li>
                     {% endif %}
                 </ul>

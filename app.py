@@ -129,7 +129,7 @@ def login():
                 'access_token': response.session.access_token
             }
             
-            return redirect(url_for('dashboard'))
+            return redirect(url_for('configuracao'))
         
         except Exception as e:
             return render_template('login.html', error=str(e))
@@ -137,9 +137,9 @@ def login():
     return render_template('login.html')
 
 # Rota para o painel do usuário (protegida)
-@app.route('/dashboard')
+@app.route('/configuracao')
 @login_required
-def dashboard():
+def configuracao():
     user = session.get('user')
     # Verificar se o usuário é admin
     try:
@@ -150,7 +150,7 @@ def dashboard():
     
     is_admin = True
     
-    return render_template('dashboard.html', user=user, is_admin=is_admin)
+    return render_template('configuracao.html', user=user, is_admin=is_admin)
 
 # Rota para logout
 @app.route('/logout')

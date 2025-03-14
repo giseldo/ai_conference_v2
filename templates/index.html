@@ -6,17 +6,29 @@
 
 <!-- Seção de Eventos/Conferências -->
 <div class="container mt-5">
-    <h2 class="mb-4 text-center">Eventos Disponíveis</h2>
-    <div class="table-responsive">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0">Eventos Disponíveis</h2>
+        <div class="btn-group" role="group" aria-label="Opções de visualização">
+            <button type="button" class="btn btn-outline-primary view-toggle active" data-view="table">
+                <i class="bi bi-table"></i> Tabela
+            </button>
+            <button type="button" class="btn btn-outline-primary view-toggle" data-view="cards">
+                <i class="bi bi-grid-3x3-gap"></i> Cards
+            </button>
+        </div>
+    </div>
+    
+    <!-- Visualização em Tabela -->
+    <div class="table-responsive view-content" id="tableView">
         <table class="table table-hover" id="conferencesTable">
             <thead class="table-dark">
                 <tr>
-                    <th class="sortable text-center align-middle" data-sort="name">Nome <i class="sort-icon"></i></th>
-                    <th class="sortable text-center align-middle" data-sort="dates">Datas <i class="sort-icon"></i></th>
-                    <th class="sortable text-center align-middle" data-sort="location">Localização <i class="sort-icon"></i></th>
-                    <th class="sortable text-center align-middle" data-sort="deadline">Prazo Submissão <i class="sort-icon"></i></th>
-                    <th class="sortable text-center align-middle" data-sort="countdown">Tempo Restante para subimissão <i class="sort-icon"></i></th>
-                    <th class="text-center align-middle">Ações</th>
+                    <th class="sortable text-start align-middle bg-primary" data-sort="name">Nome<i class="sort-icon"></i></th>
+                    <th class="sortable text-start align-middle bg-primary" data-sort="dates">Datas realização<i class="sort-icon"></i></th>
+                    <th class="sortable text-start align-middle bg-primary" data-sort="location">Localização<i class="sort-icon"></i></th>
+                    <th class="sortable text-start align-middle bg-primary" data-sort="deadline">Prazo submissão<i class="sort-icon"></i></th>
+                    <th class="sortable text-start align-middle bg-primary" data-sort="countdown">Tempo restante para submissão<i class="sort-icon"></i></th>
+                    <th class="text-start align-middle bg-primary">Ações</th>
                 </tr>
             </thead>
             <tbody>
@@ -38,17 +50,83 @@
             </tbody>
         </table>
     </div>
+    
+    <!-- Visualização em Cards -->
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 view-content" id="cardsView" style="display: none;">
+        {% for conference in conferences %}
+        <div class="col">
+            <div class="card h-100 shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0">{{ conference.name }}</h5>
+                </div>
+                <div class="card-body">
+                    <h6 class="card-subtitle mb-2 text-muted">{{ conference.full_name }}</h6>
+                    <p class="card-text"><strong>Datas:</strong> {{ conference.dates }}</p>
+                    <p class="card-text"><strong>Localização:</strong> {{ conference.location }}</p>
+                    <p class="card-text"><strong>Prazo Submissão:</strong> {{ conference.deadline }}</p>
+                    <p class="card-text">
+                        <strong>Tempo Restante:</strong><br>
+                        <span class="countdown-value card-countdown" data-deadline="{{ conference.deadline }}">Calculando...</span>
+                    </p>
+                </div>
+                <div class="card-footer bg-transparent border-top-0">
+                    <a href="{{ url_for('conference_details', conference_id=conference.id) }}" 
+                       class="btn btn-primary btn-sm w-100">Ver Detalhes</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
 </div>
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // Configuração de alternância de visualização
+        const viewToggles = document.querySelectorAll('.view-toggle');
+        const tableView = document.getElementById('tableView');
+        const cardsView = document.getElementById('cardsView');
+        
+        viewToggles.forEach(toggle => {
+            toggle.addEventListener('click', function() {
+                // Remover classe active de todos os botões
+                viewToggles.forEach(btn => btn.classList.remove('active'));
+                // Adicionar classe active ao botão clicado
+                this.classList.add('active');
+                
+                // Alternar visualização com base no botão clicado
+                const view = this.getAttribute('data-view');
+                if (view === 'table') {
+                    tableView.style.display = 'block';
+                    cardsView.style.display = 'none';
+                } else {
+                    tableView.style.display = 'none';
+                    cardsView.style.display = 'flex';
+                }
+                
+                // Atualizar os contadores
+                updateCountdowns();
+            });
+        });
+        
         // Atualizar os contadores de tempo restante
         function updateCountdowns() {
-            const countdownCells = document.querySelectorAll('.countdown-cell');
+            // Atualizar para células na tabela
+            updateCountdownElements('.countdown-cell .countdown-value');
+            // Atualizar para cards
+            updateCountdownElements('.card-countdown');
+        }
+        
+        function updateCountdownElements(selector) {
+            const countdownElements = document.querySelectorAll(selector);
             
-            countdownCells.forEach(cell => {
-                const deadlineStr = cell.getAttribute('data-deadline');
-                const countdownElement = cell.querySelector('.countdown-value');
+            countdownElements.forEach(countdownElement => {
+                // Pegar o deadline do elemento pai (célula da tabela) ou do próprio elemento (card)
+                let deadlineStr;
+                if (countdownElement.classList.contains('card-countdown')) {
+                    deadlineStr = countdownElement.getAttribute('data-deadline');
+                } else {
+                    deadlineStr = countdownElement.closest('.countdown-cell').getAttribute('data-deadline');
+                }
                 
                 // Verificar se a data é válida
                 if (!deadlineStr) {
@@ -71,7 +149,7 @@
                     
                     if (timeDiff <= 0) {
                         countdownElement.textContent = 'Prazo encerrado';
-                        cell.classList.add('text-danger');
+                        countdownElement.classList.add('text-danger');
                     } else {
                         // Calcular dias, horas, minutos restantes
                         const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
@@ -87,9 +165,9 @@
                         
                         // Adicionar classes para destacar prazos próximos
                         if (days < 1) {
-                            cell.classList.add('text-danger', 'fw-bold');
+                            countdownElement.classList.add('text-danger', 'fw-bold');
                         } else if (days < 7) {
-                            cell.classList.add('text-warning');
+                            countdownElement.classList.add('text-warning');
                         }
                     }
                 } catch (error) {
@@ -188,6 +266,24 @@
     .sort-icon {
         display: inline-block;
         width: 10px;
+    }
+    
+    .view-toggle.active {
+        background-color: #0d6efd;
+        color: white;
+    }
+    
+    #cardsView {
+        display: flex;
+        flex-wrap: wrap;
+    }
+    
+    .card {
+        transition: transform 0.2s;
+    }
+    
+    .card:hover {
+        transform: translateY(-5px);
     }
 </style>
 {% endblock %}
