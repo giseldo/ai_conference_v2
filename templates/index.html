@@ -3,49 +3,33 @@
 {% block title %}Home - Flask Supabase Auth{% endblock %}
 
 {% block content %}
-<div class="p-5 mb-4 bg-light rounded-3">
-    <div class="container-fluid py-5 text-center">
-        <h1 class="display-5 fw-bold">AI Conferences deadline</h1>
-        <p class="fs-4">Seu calendário completo de eventos em Ciência da Computação.</p>
-        {% if not session.get('user') %}
-            <div class="mt-4">
-                <a href="{{ url_for('signup') }}" class="btn btn-primary btn-lg mx-2">Registrar</a>
-                <a href="{{ url_for('login') }}" class="btn btn-outline-primary btn-lg mx-2">Entrar</a>
-            </div>
-        {% else %}
-            <div class="mt-4">
-                <a href="{{ url_for('dashboard') }}" class="btn btn-success btn-lg">Acessar Dashboard</a>
-            </div>
-        {% endif %}
-    </div>
-</div>
 
 <!-- Seção de Eventos/Conferências -->
 <div class="container mt-5">
-    <h2 class="mb-4 text-center">Conferências de IA Disponíveis</h2>
+    <h2 class="mb-4 text-center">Eventos Disponíveis</h2>
     <div class="table-responsive">
-        <table class="table table-hover">
+        <table class="table table-hover" id="conferencesTable">
             <thead class="table-dark">
                 <tr>
-                    <th>Nome</th>
-                    <th>Datas</th>
-                    <th>Localização</th>
-                    <th>Prazo</th>
-                    <th>Tempo Restante</th>
-                    <th>Ações</th>
+                    <th class="sortable text-center align-middle" data-sort="name">Nome <i class="sort-icon"></i></th>
+                    <th class="sortable text-center align-middle" data-sort="dates">Datas <i class="sort-icon"></i></th>
+                    <th class="sortable text-center align-middle" data-sort="location">Localização <i class="sort-icon"></i></th>
+                    <th class="sortable text-center align-middle" data-sort="deadline">Prazo Submissão <i class="sort-icon"></i></th>
+                    <th class="sortable text-center align-middle" data-sort="countdown">Tempo Restante para subimissão <i class="sort-icon"></i></th>
+                    <th class="text-center align-middle">Ações</th>
                 </tr>
             </thead>
             <tbody>
                 {% for conference in conferences %}
                 <tr>
-                    <td>{{ conference.name }} - {{ conference.full_name }}</td>
-                    <td>{{ conference.dates }}</td>
-                    <td>{{ conference.location }}</td>
-                    <td>{{ conference.deadline }}</td>
-                    <td class="countdown-cell" data-deadline="{{ conference.deadline }}">
+                    <td data-value="{{ conference.name }}" class="align-middle">{{ conference.name }} - {{ conference.full_name }}</td>
+                    <td data-value="{{ conference.dates }}" class="align-middle">{{ conference.dates }}</td>
+                    <td data-value="{{ conference.location }}" class="align-middle">{{ conference.location }}</td>
+                    <td data-value="{{ conference.deadline }}" class="align-middle">{{ conference.deadline }}</td>
+                    <td class="countdown-cell align-middle" data-deadline="{{ conference.deadline }}" data-value="{{ conference.deadline }}">
                         <span class="countdown-value">Calculando...</span>
                     </td>
-                    <td>
+                    <td class="align-middle">
                         <a href="{{ url_for('conference_details', conference_id=conference.id) }}" 
                            class="btn btn-primary btn-sm">Ver Detalhes</a>
                     </td>
@@ -118,6 +102,92 @@
         // Executar imediatamente e depois a cada minuto
         updateCountdowns();
         setInterval(updateCountdowns, 60000);
+
+        // Configuração da ordenação da tabela
+        const table = document.getElementById('conferencesTable');
+        const headers = table.querySelectorAll('th.sortable');
+        let currentSort = { column: null, direction: 'asc' };
+
+        // Adicionar eventos de clique aos cabeçalhos
+        headers.forEach(header => {
+            header.addEventListener('click', () => {
+                const column = header.dataset.sort;
+                const direction = column === currentSort.column && currentSort.direction === 'asc' ? 'desc' : 'asc';
+                
+                // Atualizar ícones
+                headers.forEach(h => h.querySelector('.sort-icon').textContent = '');
+                header.querySelector('.sort-icon').textContent = direction === 'asc' ? ' ▲' : ' ▼';
+                
+                // Ordenar tabela
+                sortTable(column, direction);
+                
+                // Atualizar estado de ordenação atual
+                currentSort = { column, direction };
+            });
+        });
+
+        function sortTable(column, direction) {
+            const rows = Array.from(table.querySelectorAll('tbody tr'));
+            
+            // Ordenar linhas
+            const sortedRows = rows.sort((a, b) => {
+                const cellA = a.querySelector(`td[data-value]:nth-child(${getColumnIndex(column) + 1})`);
+                const cellB = b.querySelector(`td[data-value]:nth-child(${getColumnIndex(column) + 1})`);
+                
+                let valueA = cellA ? cellA.getAttribute('data-value') : '';
+                let valueB = cellB ? cellB.getAttribute('data-value') : '';
+
+                // Ordenação para datas
+                if (column === 'deadline' || column === 'dates') {
+                    valueA = valueA ? new Date(valueA).getTime() : 0;
+                    valueB = valueB ? new Date(valueB).getTime() : 0;
+                }
+
+                // Ordenação para strings
+                if (typeof valueA === 'string' && typeof valueB === 'string') {
+                    return direction === 'asc' ? valueA.localeCompare(valueB) : valueB.localeCompare(valueA);
+                }
+
+                // Ordenação para números
+                return direction === 'asc' ? valueA - valueB : valueB - valueA;
+            });
+
+            // Limpar e recriar a tabela
+            const tbody = table.querySelector('tbody');
+            while (tbody.firstChild) {
+                tbody.removeChild(tbody.firstChild);
+            }
+
+            sortedRows.forEach(row => {
+                tbody.appendChild(row);
+            });
+        }
+
+        function getColumnIndex(columnName) {
+            let index = 0;
+            headers.forEach((header, i) => {
+                if (header.dataset.sort === columnName) {
+                    index = i;
+                }
+            });
+            return index;
+        }
     });
 </script>
+
+<style>
+    .sortable {
+        cursor: pointer;
+        user-select: none;
+    }
+    
+    .sortable:hover {
+        background-color: #2c3034;
+    }
+    
+    .sort-icon {
+        display: inline-block;
+        width: 10px;
+    }
+</style>
 {% endblock %}
