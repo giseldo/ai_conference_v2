@@ -76,14 +76,6 @@
                 </div>
 
                 <div class="mb-3">
-                    <label for="categories" class="form-label">Categorias*</label>
-                    <input type="text" class="form-control" id="categories" name="categories" 
-                           value="{% if conference %}{{ conference.categories|join(',') }}{% endif %}" required
-                           placeholder="machine-learning, natural-language-processing">
-                    <div class="form-text">Separadas por vírgula, sem espaços.</div>
-                </div>
-
-                <div class="mb-3">
                     <label for="website" class="form-label">Website*</label>
                     <input type="text" class="form-control" id="website" name="website" 
                            value="{{ conference.website if conference else '' }}" required
